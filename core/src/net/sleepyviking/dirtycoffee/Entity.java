@@ -13,7 +13,7 @@ public class Entity {
     private int resistance;
     private Vector2 position;
     private String name;
-    private String filename;
+    private String spritename;
 
     public int getMaxHealth(){
         return maxhealth;

@@ -6,6 +6,7 @@ import net.sleepyviking.dirtycoffee.DirtyCoffee;
 public class ServerLauncher {
 	public static void main (String[] arg) {
 		HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
-		new HeadlessApplication(new DirtyCoffee(), config);
+		HeadlessApplication app = new HeadlessApplication(new DirtyCoffee(), config);
+		
 	}
 }
