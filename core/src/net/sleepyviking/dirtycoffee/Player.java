@@ -3,7 +3,7 @@ package net.sleepyviking.dirtycoffee;
 /**
  * Created by The Plank on 2016-06-23.
  */
-public class Player{
+public class Player extends Entity{
 
     private int score;
 
