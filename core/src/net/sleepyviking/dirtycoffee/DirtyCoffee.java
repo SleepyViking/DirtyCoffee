@@ -3,7 +3,6 @@ package net.sleepyviking.dirtycoffee;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.List;
 
 
 public class DirtyCoffee extends ApplicationAdapter {
@@ -25,11 +26,18 @@ private Sprite sprite;
 private TextureRegion[] alliance;
 private int xCenter;
 private int yCenter;
-private InputAdapter input;
+private InputManager inputManager;
+private Player player;
+private List<Player> pList;
+private Player pArray[] = new Player[1];
 
 	@Override
 	public void create () {
 		log("Creating Application...");
+		player = new Player("Dauas", playerVector);
+		pArray[0] = player;
+		inputManager = new InputManager(player);
+		Gdx.input.setInputProcessor(inputManager);
 		batch = new SpriteBatch();
 		img = new Texture("allianceTokenSpritesheet.png");
 		img.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -42,6 +50,7 @@ private InputAdapter input;
 			}
 		}
 		sprite = new Sprite(alliance[0]);
+		player.sprite = sprite;
 		sprite.setScale(5f);
 		sprite.setX(0);
 		sprite.setY(winHeight - sprite.getHeight());
@@ -94,24 +103,24 @@ private InputAdapter input;
 	@Override
 	public void render () {
 		if (Gdx.input.isKeyPressed(Keys.D)) {
-			sprite.translateX(2);
+			player.sprite.translateX(2);
 		}
 		if (Gdx.input.isKeyPressed(Keys.A)) {
-			sprite.translateX(-2);
+			player.sprite.translateX(-2);
 		}
 		if (Gdx.input.isKeyPressed(Keys.W)) {
-			sprite.translateY(2);
+			player.sprite.translateY(2);
 		}
 		if (Gdx.input.isKeyPressed(Keys.S)) {
-			sprite.translateY(-2);
+			player.sprite.translateY(-2);
 		}
 		if (Gdx.input.isKeyPressed(Keys.Q)){
-			sprite.setScale(sprite.getScaleX() - .2f);
+			player.sprite.setScale(sprite.getScaleX() - .2f);
 		}
 		if (Gdx.input.isKeyPressed(Keys.E)){
-			sprite.setScale(sprite.getScaleX() + .2f);
+			player.sprite.setScale(sprite.getScaleX() + .2f);
 		}
-		playerVector = new Vector2(playerXPosition, playerYPosition);
+		//playerVector = new Vector2(playerXPosition, playerYPosition);
 
 		/**Resets Background for redrawing
 		 * Prevents
@@ -120,8 +129,11 @@ private InputAdapter input;
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			batch.begin();
 			/**Draw Everything in Here, Stop Drawing before batch.end()**/
-			sprite.draw(batch);
-			batch.draw(img, xCenter - img.getWidth()/2, yCenter - img.getHeight()/2); //Dependent on Error in line 19
+			for (int i = 0; i < pArray.length; i++){
+				pArray[i].move();
+				pArray[i].sprite.draw(batch);
+			}
+			batch.draw(img, xCenter - img.getWidth()/2, yCenter - img.getHeight()/2);
 			batch.draw(alliance[0], 0, 0);
 			batch.draw(alliance[1], 50, 0);
 			batch.draw(alliance[2], 100,0);
