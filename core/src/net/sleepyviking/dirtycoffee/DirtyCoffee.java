@@ -2,6 +2,7 @@ package net.sleepyviking.dirtycoffee;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,11 +11,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.List;
 
 
 public class DirtyCoffee extends ApplicationAdapter {
+
 private int winHeight;
 private int winWidth;
 private int playerXPosition = 0;
@@ -30,17 +33,32 @@ private InputManager inputManager;
 private Player player;
 private List<Player> pList;
 private Player pArray[] = new Player[1];
+private Entity entityArray[] = new Entity[1];
+private LogicThread  logic;
+private OrthographicCamera camera;
 
 	@Override
 	public void create () {
 		log("Creating Application...");
-		player = new Player("Dauas", playerVector);
-		pArray[0] = player;
+		winWidth = Gdx.graphics.getWidth();
+		winHeight = Gdx.graphics.getHeight();
+		xCenter = winWidth/2;
+		yCenter = winHeight/2;
+		log("Width = "+ winWidth);
+		log("Height = "+ winHeight);
+		camera = new OrthographicCamera(winWidth,winWidth*(winHeight/winWidth));
+		camera.setToOrtho(false);
+		camera.update();
+		logic = new LogicThread(this);
+		new Thread(logic).start();
+		player = new Player("Dauas", playerVector, camera);
+		entityArray[0] = player;
 		inputManager = new InputManager(player);
 		Gdx.input.setInputProcessor(inputManager);
 		batch = new SpriteBatch();
 		img = new Texture("allianceTokenSpritesheet.png");
-		img.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		/**Set Texture Filter to Nearest for non Blurred Scaling*/
+		img.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
 		TextureRegion[][] tempSorting = TextureRegion.split(img,16, 16);
 		alliance = new TextureRegion[4];
 		int index = 0;
@@ -54,12 +72,7 @@ private Player pArray[] = new Player[1];
 		sprite.setScale(5f);
 		sprite.setX(0);
 		sprite.setY(winHeight - sprite.getHeight());
-		winWidth = Gdx.graphics.getWidth();
-		winHeight = Gdx.graphics.getHeight();
-		xCenter = winWidth/2;
-		yCenter = winHeight/2;
-		log("Width = "+ winWidth);
-		log("Height = "+ winHeight);
+
 		log("Done.");
 
 
@@ -69,7 +82,9 @@ private Player pArray[] = new Player[1];
 		/**Handle's Closing procedure's, Called when Application is manually closed or at any Exit Point within the code**/
 		log("Game is Closing...");
 		batch.dispose();
-		System.exit(0);
+
+		//logic.dispose();
+		//System.exit(0);
 	}
 
 	public void resize(int width, int height){
@@ -102,36 +117,20 @@ private Player pArray[] = new Player[1];
 	 * */
 	@Override
 	public void render () {
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-			player.sprite.translateX(2);
-		}
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-			player.sprite.translateX(-2);
-		}
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-			player.sprite.translateY(2);
-		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
-			player.sprite.translateY(-2);
-		}
-		if (Gdx.input.isKeyPressed(Keys.Q)){
-			player.sprite.setScale(sprite.getScaleX() - .2f);
-		}
-		if (Gdx.input.isKeyPressed(Keys.E)){
-			player.sprite.setScale(sprite.getScaleX() + .2f);
-		}
-		//playerVector = new Vector2(playerXPosition, playerYPosition);
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		logic.updatePositions(Gdx.graphics.getDeltaTime(), entityArray);
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
 
 		/**Resets Background for redrawing
 		 * Prevents
 		 **/
-			Gdx.gl.glClearColor(1, 1, 1, 1);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 			batch.begin();
 			/**Draw Everything in Here, Stop Drawing before batch.end()**/
-			for (int i = 0; i < pArray.length; i++){
-				pArray[i].move();
-				pArray[i].sprite.draw(batch);
+			for (int i = 0; i < entityArray.length; i++){
+				entityArray[i].sprite.draw(batch);
 			}
 			batch.draw(img, xCenter - img.getWidth()/2, yCenter - img.getHeight()/2);
 			batch.draw(alliance[0], 0, 0);
@@ -140,7 +139,7 @@ private Player pArray[] = new Player[1];
 			batch.draw(alliance[3], 150,0);
 			/**Stop Drawing**/
 			batch.end();
-
+			//dispose();
 	}
 
 	public void log(String s){
