@@ -1,0 +1,14 @@
+Dirty Coffee To-Do List
+
+Input
+    Make Input Manager Instantiate to a single instance of player
+
+Networking
+    Begin Networking
+
+Sound
+    Figure out Any kind of Audio Really
+
+Logic
+    Improve Entity and Player Relation
+        Player should Build from entity and use Entity move code with minimum overides reserved for Input Handling

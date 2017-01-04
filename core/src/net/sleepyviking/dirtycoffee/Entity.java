@@ -1,5 +1,6 @@
 package net.sleepyviking.dirtycoffee;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -11,9 +12,12 @@ public class Entity {
     private int health;
     private int weight;
     private int resistance;
-    private Vector2 position;
+    private int speed;
+    public Vector2 position;
+    public Vector2 velocity;
     private String name;
     private String spritename;
+    public Sprite sprite;
 
     public int getMaxHealth(){
         return maxhealth;
@@ -77,4 +81,25 @@ public class Entity {
         position.set(x, y);
     }
 
+    public void changeXPosition(float multiplier) {
+        position.x += speed * multiplier;
+        //sprite.setPosition(position.x, position.y);
+    }
+    public void changeYPosition(float multiplier) {
+        position.y += speed * multiplier;
+        //sprite.setPosition(position.x, position.y);
+    }
+
+    public void changeXVelocity(int multiplier){
+        velocity.x = multiplier;
+    }
+    public void changeYVelocity(int multiplier){
+        velocity.y = multiplier;
+    }
+
+    public void move(){
+        changeXPosition(velocity.x);
+        changeYPosition(velocity.y);
+        sprite.setPosition(position.x, position.y);
+    }
 }
