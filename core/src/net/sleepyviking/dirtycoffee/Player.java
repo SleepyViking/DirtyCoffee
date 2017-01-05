@@ -3,6 +3,7 @@ package net.sleepyviking.dirtycoffee;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 /**
  * Created by The Plank on 2016-06-23.
@@ -14,14 +15,18 @@ public class Player extends Entity{
     //public Sprite sprite;
     public Vector2 position;
     public Vector2 velocity;
+    public Vector2 camVelocity;
     public int speed = 10;
+    public int camSpeed = 5;
     public OrthographicCamera camera;
+    public boolean tryCamCenter = true;
 
     Player(String playerName, Vector2 playerPosition, OrthographicCamera playerCamera){
         name = playerName;
         score = 0;
         position = playerPosition;
         velocity = new Vector2(0, 0);
+        camVelocity = new Vector2(0, 0);
         setEntity();
         camera = playerCamera;
 
@@ -53,7 +58,27 @@ public class Player extends Entity{
         changeYPosition(velocity.y);
         sprite.setPosition(position.x, position.y);
         camera.translate(velocity.x * speed, velocity.y * speed);
+        camera.translate(camVelocity.x * speed, camVelocity.y * speed);
         camera.update();
+        centerCamera();
+
+    }
+
+    public void changeCamXVelocity(int multiplier){
+        camVelocity.x = multiplier;
+    }
+
+    public void changeCamYVelocity(int multiplier){
+        camVelocity.y = multiplier;
+    }
+
+    public void centerCamera(){
+        if (camera.position != new Vector3(position.x, position.y, 0) && tryCamCenter == true) {
+            float xOff = position.x - camera.position.x;
+            float yOff = position.y - camera.position.y;
+            camera.translate(xOff/10, yOff/10);
+            camera.update();
+        }
 
     }
     public void setSpeed(int playerSpeed) {speed = playerSpeed;}

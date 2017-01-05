@@ -20,24 +20,48 @@ public class InputManager implements InputProcessor {
     public boolean keyDown (int keycode) {
 
             switch (keycode) {
-                case Keys.LEFT:
+                case Keys.A:
                     player.changeXVelocity(-1);
                     System.out.println("LEFT has been pressed.");
+                    player.tryCamCenter = true;
 
                     break;
-                case Keys.RIGHT:
+                case Keys.D:
                     player.changeXVelocity(1);
                     System.out.println("RIGHT has been pressed.");
+                    player.tryCamCenter = true;
                     break;
 
-                case Keys.DOWN:
+                case Keys.S:
                     player.changeYVelocity(-1);
                     System.out.println("UP has been pressed.");
+                    player.tryCamCenter = true;
+                    break;
+
+                case Keys.W:
+                    player.changeYVelocity(1);
+                    System.out.println("DOWN has been pressed.");
+                    player.tryCamCenter = true;
                     break;
 
                 case Keys.UP:
-                    player.changeYVelocity(1);
-                    System.out.println("DOWN has been pressed.");
+                    player.tryCamCenter = false;
+                    player.changeCamYVelocity(1);
+                    break;
+
+                case Keys.LEFT:
+                    player.tryCamCenter = false;
+                    player.changeCamXVelocity(-1);
+                    break;
+
+                case Keys.DOWN:
+                    player.tryCamCenter = false;
+                    player.changeCamYVelocity(-1);
+                    break;
+
+                case Keys.RIGHT:
+                    player.tryCamCenter = false;
+                    player.changeCamXVelocity(1);
                     break;
 
 
@@ -50,24 +74,44 @@ public class InputManager implements InputProcessor {
 
     public boolean keyUp (int keycode) {
         switch (keycode) {
-            case Keys.LEFT:
+            case Keys.A:
                 player.changeXVelocity(0);
                 System.out.println("LEFT has been released.");
 
                 break;
-            case Keys.RIGHT:
+            case Keys.D:
                 player.changeXVelocity(0);
                 System.out.println("RIGHT has been released.");
                 break;
 
-            case Keys.DOWN:
+            case Keys.S:
                 player.changeYVelocity(0);
                 System.out.println("UP has been released.");
                 break;
 
-            case Keys.UP:
+            case Keys.W:
                 player.changeYVelocity(0);
                 System.out.println("DOWN has been released.");
+                break;
+
+            case Keys.UP:
+                //player.tryCamCenter = true;
+                player.changeCamYVelocity(0);
+                break;
+
+            case Keys.LEFT:
+                //player.tryCamCenter = true;
+                player.changeCamXVelocity(0);
+                break;
+
+            case Keys.DOWN:
+                //player.tryCamCenter = true;
+                player.changeCamYVelocity(0);
+                break;
+
+            case Keys.RIGHT:
+                //player.tryCamCenter = true;
+                player.changeCamXVelocity(0);
                 break;
         }
         return false;
